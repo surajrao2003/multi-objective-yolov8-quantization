@@ -1,0 +1,75 @@
+# --- Python / env ---
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+.env
+.env.*
+
+# --- OS / IDE ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# --- Models: ignore bulk artifacts; keep layout + yolov8n @ 320 / 640 / 1280 per family ---
+# (Representative sizes under GitHub limits; regenerate other variants with export scripts.)
+
+# PyTorch: keep one checkpoint
+models/yolo_pytorch_models/*
+!models/yolo_pytorch_models/yolov8n.pt
+
+# TensorRT: keep one engine (add !exceptions if you add more small engines)
+models/trt_engines/*
+!models/trt_engines/yolov8n_640_dynamic_quantized.engine
+
+# ONNX tree: ignore everything, then allow each precision family + three input sizes + yolov8n only
+models/yolo_onnx_models/**
+!models/yolo_onnx_models/FP32_onnx_models/
+models/yolo_onnx_models/FP32_onnx_models/**
+!models/yolo_onnx_models/FP32_onnx_models/320/
+models/yolo_onnx_models/FP32_onnx_models/320/**
+!models/yolo_onnx_models/FP32_onnx_models/320/yolov8n_320.onnx
+!models/yolo_onnx_models/FP32_onnx_models/640/
+models/yolo_onnx_models/FP32_onnx_models/640/**
+!models/yolo_onnx_models/FP32_onnx_models/640/yolov8n_640.onnx
+!models/yolo_onnx_models/FP32_onnx_models/1280/
+models/yolo_onnx_models/FP32_onnx_models/1280/**
+!models/yolo_onnx_models/FP32_onnx_models/1280/yolov8n_1280.onnx
+
+!models/yolo_onnx_models/FP16_quantized_models/
+models/yolo_onnx_models/FP16_quantized_models/**
+!models/yolo_onnx_models/FP16_quantized_models/320/
+models/yolo_onnx_models/FP16_quantized_models/320/**
+!models/yolo_onnx_models/FP16_quantized_models/320/yolov8n_320_fp16.onnx
+!models/yolo_onnx_models/FP16_quantized_models/640/
+models/yolo_onnx_models/FP16_quantized_models/640/**
+!models/yolo_onnx_models/FP16_quantized_models/640/yolov8n_640_fp16.onnx
+!models/yolo_onnx_models/FP16_quantized_models/1280/
+models/yolo_onnx_models/FP16_quantized_models/1280/**
+!models/yolo_onnx_models/FP16_quantized_models/1280/yolov8n_1280_fp16.onnx
+
+!models/yolo_onnx_models/INT8_dynamic_quantized_models/
+models/yolo_onnx_models/INT8_dynamic_quantized_models/**
+!models/yolo_onnx_models/INT8_dynamic_quantized_models/320/
+models/yolo_onnx_models/INT8_dynamic_quantized_models/320/**
+!models/yolo_onnx_models/INT8_dynamic_quantized_models/320/yolov8n_320_dynamic_quantized.onnx
+!models/yolo_onnx_models/INT8_dynamic_quantized_models/640/
+models/yolo_onnx_models/INT8_dynamic_quantized_models/640/**
+!models/yolo_onnx_models/INT8_dynamic_quantized_models/640/yolov8n_640_dynamic_quantized.onnx
+!models/yolo_onnx_models/INT8_dynamic_quantized_models/1280/
+models/yolo_onnx_models/INT8_dynamic_quantized_models/1280/**
+!models/yolo_onnx_models/INT8_dynamic_quantized_models/1280/yolov8n_1280_dynamic_quantized.onnx
+
+!models/yolo_onnx_models/INT8_static_quantized_models/
+models/yolo_onnx_models/INT8_static_quantized_models/**
+!models/yolo_onnx_models/INT8_static_quantized_models/320/
+models/yolo_onnx_models/INT8_static_quantized_models/320/**
+!models/yolo_onnx_models/INT8_static_quantized_models/320/yolov8n_320_static_quantized.onnx
+!models/yolo_onnx_models/INT8_static_quantized_models/640/
+models/yolo_onnx_models/INT8_static_quantized_models/640/**
+!models/yolo_onnx_models/INT8_static_quantized_models/640/yolov8n_640_static_quantized.onnx
+!models/yolo_onnx_models/INT8_static_quantized_models/1280/
+models/yolo_onnx_models/INT8_static_quantized_models/1280/**
+!models/yolo_onnx_models/INT8_static_quantized_models/1280/yolov8n_1280_static_quantized.onnx

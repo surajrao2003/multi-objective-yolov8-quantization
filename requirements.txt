@@ -1,0 +1,28 @@
+# People detection / YOLOv8 ONNX pipeline
+#
+#   pip install -r requirements.txt
+#
+# PyTorch: install separately for your machine — https://pytorch.org/get-started/locally/
+#   CPU:  pip install torch --index-url https://download.pytorch.org/whl/cpu
+#   GPU:  pip install torch --index-url https://download.pytorch.org/whl/cu124
+#
+# ONNX Runtime GPU: version below matches CUDA 12 + cuDNN 9 wheels on PyPI.
+# On Windows, pip can bundle CUDA/cuDNN next to the package (code calls preload_dlls):
+#   pip install "onnxruntime-gpu[cuda,cudnn]==1.23.2"
+# Or install the CUDA Toolkit + cuDNN and ensure DLLs are on PATH — see:
+# https://onnxruntime.ai/docs/execution-providers/CUDA-ExecutionProvider.html
+#
+#
+# For TensorRT (TRT_edge_deployment/*.py): match your CUDA (Jetson: use JetPack / L4T wheels).
+# https://docs.nvidia.com/deeplearning/tensorrt/install-guide/index.html
+numpy>=1.23.0
+pandas>=2.0.0
+matplotlib>=3.7.0
+tabulate>=0.9.0
+opencv-contrib-python>=4.8.0
+PyYAML>=6.0
+ultralytics>=8.1.0
+onnx>=1.14.0
+onnxruntime-gpu==1.23.2
+tensorrt
+pycuda
