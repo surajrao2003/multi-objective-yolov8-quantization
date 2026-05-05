@@ -16,6 +16,7 @@ PERSON_CLASS_ID = 0
 MAP_IOU = 0.5  # COCO AP50-style matching threshold (separate from NMS IoU)
 
 
+# Picks the numpy dtype that matches the model's input tensor type.
 def _ort_input_feed_dtype(inp: ort.NodeArg) -> np.dtype:
     """Map ORT declared input type string to NumPy dtype; default float32 (FP32 models)."""
     t = inp.type.lower()
@@ -33,6 +34,7 @@ _GPU_OR_CUDA_SETUP = (
 )
 
 
+# Loads the ONNX model for CPU or GPU and returns an inference session.
 def initialize_model(model_path, device):
     dev = (device or "").lower()
     if dev == "gpu":
@@ -54,6 +56,7 @@ def initialize_model(model_path, device):
     return model
 
 
+# Runs one image through the model and returns person boxes, scores, and class ids.
 def infer_boxes(
     model,
     frame_bgr: np.ndarray,
@@ -93,6 +96,7 @@ def infer_boxes(
     return boxes, scores, class_ids, hw
 
 
+# Draws detection boxes and a people count on a copy of the input frame.
 def draw_predictions(frame_bgr: np.ndarray, boxes, scores, class_ids) -> np.ndarray:
     result_frame = frame_bgr.copy()
     people_count = 0
@@ -117,6 +121,7 @@ def draw_predictions(frame_bgr: np.ndarray, boxes, scores, class_ids) -> np.ndar
     return result_frame
 
 
+# Draws label text on the frame with a filled background rectangle behind it.
 def draw_text(frame, text, position, font, font_scale, text_color, bg_color):
     (text_width, text_height), _ = cv2.getTextSize(text, font, font_scale, thickness=2)
     x, y = position
@@ -126,6 +131,7 @@ def draw_text(frame, text, position, font, font_scale, text_color, bg_color):
     cv2.putText(frame, text, (x, y), font, font_scale, text_color, 2)
 
 
+# Returns a short human-readable string for the model file size on disk.
 def format_model_disk_size(model_path: str) -> str:
     p = Path(model_path)
     n = p.stat().st_size
@@ -133,6 +139,7 @@ def format_model_disk_size(model_path: str) -> str:
     return f"{mib:.2f} MiB ({n:,} bytes)"
 
 
+# Reports whether the session is using CPU or GPU as its main provider.
 def reported_device_from_session(model: ort.InferenceSession) -> str:
     """
     Summarize where ONNX Runtime runs the graph using the session's provider order.
@@ -143,6 +150,7 @@ def reported_device_from_session(model: ort.InferenceSession) -> str:
     return "cpu" if primary == "CPUExecutionProvider" else "gpu"
 
 
+# Runs inference on all images in a folder, saves results, and prints FPS and mAP.
 def run_image_inference(
     model,
     images_dir: str,

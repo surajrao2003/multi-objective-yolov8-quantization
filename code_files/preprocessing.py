@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 
+# Resizes the frame to fit inside the target size and adds gray padding (letterbox style).
 def resize_and_pad_frame(frame, new_shape=(640, 640), auto=False, scaleFill=False, scaleup=True, stride=32):
     shape = frame.shape[:2] # Get the shape of the input frame
     # Convert new_shape to tuple if it's an integer
@@ -24,6 +25,7 @@ def resize_and_pad_frame(frame, new_shape=(640, 640), auto=False, scaleFill=Fals
     # Return the resized and padded image along with resizing and padding ratios
     return new_img, (r, r), (dw, dh)
 
+# Prepares a BGR frame for the network: RGB, letterbox, normalize, and batch layout.
 def preprocess_frame(
     input_frame, input_size=(640, 640), *, feed_dtype=np.float32
 ):

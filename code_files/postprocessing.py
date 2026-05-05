@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 
+# Turns center-width-height boxes into corner (x1,y1,x2,y2) boxes in float32.
 def xywh2xyxy(x):
     # Convert [x_center, y_center, width, height] to [x1, y1, x2, y2]
     # float32: ONNX FP16 outputs would otherwise keep float16 through zeros_like / NMS
@@ -13,6 +14,7 @@ def xywh2xyxy(x):
     return y
 
 ############################## scale bounding boxes #############################################################
+# Maps boxes from the letterboxed image back to the original image size.
 def scale_boxes(boxes, img1_shape, img0_shape, scale, pad):
     boxes[:, [0, 2]] -= pad[0]  # Remove padding from x-coordinates
     boxes[:, [1, 3]] -= pad[1]  # Remove padding from y-coordinates
@@ -23,6 +25,7 @@ def scale_boxes(boxes, img1_shape, img0_shape, scale, pad):
     return boxes
 
 ############################### IOU calculation #################################################################
+# Returns the pixel area where two axis-aligned boxes overlap.
 def intersection(box1, box2):
     # float32 avoids fp16 overflow on area = width * height for large images / NMS
     box1 = np.asarray(box1, dtype=np.float32)
@@ -36,6 +39,7 @@ def intersection(box1, box2):
     inter_area = (x2 - x1).clip(min=0) * (y2 - y1).clip(min=0)
     return inter_area
 
+# Returns the union area of two boxes (both boxes minus double-counted overlap).
 def union(box1, box2):
     box1 = np.asarray(box1, dtype=np.float32)
     box2 = np.asarray(box2, dtype=np.float32)
@@ -44,6 +48,7 @@ def union(box1, box2):
     inter_area = intersection(box1, box2)
     return box1_area + box2_area - inter_area
 
+# Returns intersection-over-union between two boxes (0 if they do not overlap).
 def iou(box1, box2):
     # Calculate intersection area using the intersection function
     inter_area = intersection(box1, box2)
@@ -56,6 +61,7 @@ def iou(box1, box2):
     return inter_area / union_area
 
 #################################### NMS #########################################################################
+# Keeps high-score boxes and drops others that overlap them too much (classic NMS).
 def non_max_suppression(boxes, scores, overlap_thresh):
     # Check if there are any boxes to suppress
     if len(boxes) == 0:
@@ -85,6 +91,7 @@ def non_max_suppression(boxes, scores, overlap_thresh):
     return boxes[picked_indices], scores[picked_indices]
     
 ################################### Filter output by confidence #########################################################################################
+# Keeps only detections whose confidence score is at or above the threshold.
 def filter_by_confidence(boxes, scores, conf_threshold):
     # Find indices of detections with confidence value greater than the confidence threshold
     # valid_indices = scores >= conf_threshold
@@ -97,6 +104,7 @@ def filter_by_confidence(boxes, scores, conf_threshold):
     return filtered_boxes, filtered_scores
 
 ################################## Display People Count ##################################################################################
+# Draws a small labeled patch on the image showing how many people were detected.
 def display_people_count_patch(original_image, people_count, position=(20, 30), patch_size=(220, 40), font_scale=0.7, font_thickness=2):
     # Calculate bottom right position of the patch based on top left position and patch size
     patch_top_left = position
@@ -112,6 +120,7 @@ def display_people_count_patch(original_image, people_count, position=(20, 30), 
     cv2.putText(original_image, f"People Count: {people_count}", text_position, cv2.FONT_HERSHEY_SIMPLEX, font_scale, (0, 0, 0), font_thickness)
 
 ##################################  Postprocess ################################################################################################################
+# Parses model output, filters to people, runs NMS, and scales boxes to the original image.
 def postprocess_and_log_outputs(original_image, outputs, original_img_shape, scale, pad, conf_threshold=0.3, iou_threshold=0.7, person_class_id=0):
     output = outputs[0][0]  # Assuming the first output is the desired one
     detections = np.asarray(output.transpose(), dtype=np.float32)

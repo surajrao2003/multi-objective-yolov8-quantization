@@ -9,6 +9,7 @@ from postprocessing import iou
 PERSON_CLASS_ID = 0
 
 
+# Reads a YOLO label file and returns person boxes as XYXY pixel coordinates.
 def load_yolo_ground_truth(
     labels_dir: Path, stem: str, img_h: int, img_w: int, class_id: int = PERSON_CLASS_ID
 ) -> np.ndarray:
@@ -40,6 +41,7 @@ def load_yolo_ground_truth(
     return np.asarray(xyxy_list, dtype=np.float32)
 
 
+# Computes VOC-style average precision from recall and precision arrays.
 def _voc_ap(rec: np.ndarray, prec: np.ndarray) -> float:
     """VOC-style AP with precision envelope (interpolated)."""
     mrec = np.concatenate(([0.0], rec, [1.0]))
@@ -50,6 +52,7 @@ def _voc_ap(rec: np.ndarray, prec: np.ndarray) -> float:
     return float(np.sum((mrec[idx + 1] - mrec[idx]) * mpre[idx + 1]))
 
 
+# Computes person-class mAP by matching predictions to ground truth at a fixed IoU.
 def mean_average_precision_person(
     images_gts: list[np.ndarray],
     images_preds: list[tuple[np.ndarray, np.ndarray]],
