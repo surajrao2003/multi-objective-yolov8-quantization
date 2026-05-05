@@ -36,20 +36,21 @@ Together **(m, q, r, h)** defines one ONNX configuration to benchmark. There is 
 ### Repo layout
 
 
-| Path                                          | Role                                                                                               |
-| --------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| `code_files/main_execution.py`                | CLI: run inference on a folder of images + labels                                                  |
-| `code_files/inference.py`                     | Loads the ONNX session, runs images, prints FPS / device / size / mAP                              |
-| `quantization_code_files/`                    | Scripts to export FP32, FP16, INT8 dynamic, INT8 static ONNX                                       |
-| `optimization/run_optimization.py`            | One-command pipeline: generate benchmark CSV (using csv_generator) + compute utility ranking       |
-| `optimization/output_csv_results/`            | Outputs: scored table, report and trade-off plots                                                  |
-| `models/yolo_onnx_models/`                    | ONNX files grouped by precision type and resolution                                                |
-| `models/trt_engines/`                         | Optional: TensorRT `.engine` files to test an optimized configuration from the optimization report |
-| `models/config_custom_data.yaml`              | Class names for dataset config                                                                     |
-| `TRT_edge_deployment/build_trt_engine.py`     | After the report: build a TensorRT `.engine` from the chosen ONNX (FP32 / FP16)                    |
-| `TRT_edge_deployment/trt_inference.py`        | Optional: TensorRT on desktop GPU (FPS, size, mAP; `outputfolder_trt/`)                            |
-| `TRT_edge_deployment/trt_inference_jetson.py` | Optional: same on **Jetson Orin Nano** (`outputfolder_trt_jetson/`)                                |
-| `TRT_edge_deployment/trt_runtime.py`          | Shared TensorRT session + benchmark for both inference scripts above                               |
+| Path                                          | Role                                                                                                                         |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `code_files/main_execution.py`                | CLI: run inference on a folder of images + labels                                                                            |
+| `code_files/inference.py`                     | Loads the ONNX session, runs images, prints FPS / device / size / mAP                                                        |
+| `quantization_code_files/`                    | Scripts to export FP32, FP16, INT8 dynamic, INT8 static ONNX                                                                 |
+| `optimization/run_optimization.py`            | One-command pipeline: generate benchmark CSV (using csv_generator) + compute utility ranking                                 |
+| `optimization/output_csv_results/`            | Outputs: scored table, report and trade-off plots                                                                            |
+| `models/yolo_onnx_models/`                    | ONNX files grouped by precision type and resolution                                                                          |
+| `models/trt_engines/`                         | Optional: TensorRT `.engine` files to test an optimized configuration from the optimization report                           |
+| `models/config_custom_data.yaml`              | Class names for dataset config                                                                                               |
+| `TRT_edge_deployment/build_trt_engine.py`     | After the report: build a TensorRT `.engine` from the chosen ONNX (FP32 / FP16)                                              |
+| `TRT_edge_deployment/trt_inference.py`        | Optional: TensorRT on desktop GPU (FPS, size, mAP; `outputfolder_trt/`)                                                      |
+| `TRT_edge_deployment/trt_inference_jetson.py` | Optional: same on **Jetson Orin Nano** (`outputfolder_trt_jetson/`)                                                          |
+| `TRT_edge_deployment/trt_runtime.py`          | Shared TensorRT session + benchmark for both inference scripts above                                                         |
+| `benchmarking_results.pdf`                    | Terminal screenshots of the benchmark runs whose numbers populate `optimization/configurations.csv` (via `csv_generator.py`) |
 
 
 ### ONNX folders under `models/yolo_onnx_models/`
@@ -63,6 +64,7 @@ Each precision type uses the same layout: `**<subfolder>/<320 \| 640 \| 1280>/`*
 | `FP16_quantized_models/<size>/`         | FP16 quantization                                      | `quantization_code_files/FP16_quantization/export_fp16_onnx.py`                  |
 | `INT8_dynamic_quantized_models/<size>/` | INT8 dynamic quantization                              | `quantization_code_files/INT8_dynamic_quantization/dynamic_quantization_onnx.py` |
 | `INT8_static_quantized_models/<size>/`  | INT8 static quantization (calibration images required) | `quantization_code_files/INT8_static_quantization/static_quantization_onnx.py`   |
+
 
 **Note:** This repository ships sample **YOLOv8n** ONNX checkpoints at input sizes **320, 640, and 1280** for each precision folder above; other sizes and variants can be produced with the export scripts.
 
@@ -111,6 +113,7 @@ multi-objective-yolov8-quantization/
 │   ├── run_optimization.py         # generate utility scores, report and tradeoff images.
 │   ├── configurations.csv
 │   └── output_csv_results/         # full_results_with_utility.csv, optimization_report.md, PNG figures
+├── benchmarking_results.pdf        # terminal screenshots for the benchmarks encoded in configurations.csv 
 ├── TRT_edge_deployment/            # after optimization report: build .engine, test on desktop or Jetson
 │   ├── build_trt_engine.py         # ONNX → .engine
 │   ├── trt_runtime.py              # shared TRT session + benchmark
@@ -215,6 +218,7 @@ python .\TRT_edge_deployment\trt_inference.py --engine "models\trt_engines\<name
 
 ### Notes
 
+- `benchmarking_results.pdf` contains the terminal screenshots of the benchmark runs whose FPS, size and mAP figures are entered into `optimization/configurations.csv` by `csv_generator.py`.
 - **FP16 / INT8** inputs: preprocessing dtype must match the model’s ONNX input type; mismatch shows up as errors at `session.run()`.
 - **Quantization scripts** each have a short “how to run” block at the top of the file.
 - **PowerShell:** use one long `python ...` line, or line continuation with a **backtick** (```), not `^`.
